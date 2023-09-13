@@ -18,9 +18,15 @@
 		<div class="nav-wrapper orange">
 		  <a href="/" class="brand-logo">PV-111</a>
 		  <ul id="nav-mobile" class="right hide-on-med-and-down">
-			<li><a href="sass.html">Sass</a></li>
-			<li><a href="badges.html">Components</a></li>
-			<li><a href="collapsible.html">JavaScript</a></li>
+			<li <?php if($page=='about.php') echo 'class="active"'; ?> >
+				<a href="/about">About</a>
+			</li>
+			<li <?php if($page=='forms.php') echo 'class="active"'; ?> >
+				<a href="/forms">Forms</a>
+			</li>
+			<li <?php if($page=='db.php'   ) echo 'class="active"'; ?> >
+				<a href="/db">DB</a>
+			</li>
 		  </ul>
 		</div>
 	</nav>
