@@ -1,3 +1,8 @@
+<?php
+	if( ! isset( $page ) ) :  # формалізм, схожий на Python
+		echo 'Invalid access' ;
+		endif;
+?>
 <!doctype html>
 <html>
 <head>
