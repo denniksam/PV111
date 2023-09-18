@@ -1,38 +1,6 @@
-<?php
-	$name_class = "validate" ;
-	$reg_name = "" ;
-	if( $_SERVER[ 'REQUEST_METHOD' ] == 'POST' ) { 
-		// оброблення даних форми
-		// echo '<pre>' ; print_r( $_POST ) ; exit ;
-		// етап 1 - валідація
-		if( ! isset( $_POST[ 'reg-name' ] ) ) {  // наявність самих даних
-			$name_message = "No reg-name field" ;
-		}
-		else {
-			$reg_name = $_POST[ 'reg-name' ] ;
-			if( strlen( $reg_name ) < 2 ) {
-				$name_message = "Name too short" ;
-			}
-		}
-		if( isset( $name_message ) ) {  // валідація імені не пройшла
-			$name_class = "invalid" ;
-		}
-		else {  // успішна валідація
-			$name_class = "valid" ;
-		}
-	}
-	/* Задачі: 
-	1. для input class може приймати одне з трьох значень:
-	    "validate" - немає попередніх даних (заповнення форми вперше)
-		"invalid" - є дані і вони некоректні
-		"valid" - є коректні дані
-	   TODO: скласти вираз для перемикання цих значень.
-	2. якщо є передані дані то їх бажано відновити у полях форми   
-	Д.З. Виконати ці задачі для всіх полів форми
-	*/
-?>
+
 <div class="row">
-<form class="col s12" method="post">
+<form class="col s12" method="post" enctype="multipart/form-data">
   <div class="row">
 	<div class="input-field col s6">
 	  <i class="material-icons prefix">account_circle</i>
@@ -45,8 +13,12 @@
 	</div>
 	<div class="input-field col s6">
 	  <i class="material-icons prefix">badge</i>
-	  <input id="reg-lastname" name="reg-lastname" type="text" class="validate">
+	  <input id="reg-lastname" name="reg-lastname" type="text" 
+		class='<?= $lastname_class ?>' value='<?= $reg_lastname ?>'>
 	  <label for="reg-lastname">Last Name</label>
+	  <?php if( isset( $lastname_message ) ) : ?>
+		<span class="helper-text" data-error="<?= $lastname_message ?>"></span>
+	  <?php endif ?>	
 	</div>
   </div>
   <div class="row">
@@ -61,6 +33,17 @@
 	  <label for="reg-phone">Telephone</label>
 	</div>
   </div>
+  <div class="row">
+    <div class="file-field input-field  col s6">
+      <div class="btn orange darken-1">
+        <span>File</span>
+        <input type="file" name="reg-avatar" />
+      </div>
+      <div class="file-path-wrapper">
+        <input class="file-path validate" type="text" placeholder="Виберіть аватарку">
+      </div>
+    </div>
+  </div>
   <div class="row center-align">
 	<button class="waves-effect waves-light btn orange darken-3">
 		<i class="material-icons right">how_to_reg</i>Register
@@ -68,3 +51,13 @@
   </div>
 </form>
 </div>
+<p>
+Особливості роботи з формами полягають у тому, що оновлення
+сторінки можи привести до повторної передачі даних. У разі
+POST запиту про це видається попередження, у разі GET - повтор
+автоматичний. Рекомендовано роботу з формами розділяти на 
+два етапи: 1) прийом і оброблення даних та 2) відображення.
+Між цими етапами сервер передає браузеру редирект і зберігає
+дані у сесії. При повторному запиті дані відновлюються і 
+відображаються.
+</p>
