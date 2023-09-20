@@ -1,3 +1,16 @@
 body {
-	background-color: #bebebe;
+	background-color: #dadada;
+}
+code {
+	background-color: #323232;
+	color: snow;
+	font-size: large;
+	font-weight: 700;
+	padding: 5px 10px;
+}
+em {
+	background-color: #bababa;
+	font-size: large;
+	font-style: normal;
+	padding: 3px 10px;
 }
