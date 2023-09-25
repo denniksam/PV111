@@ -44,6 +44,16 @@ $router_direct = [  // контролери - самі визначають ві
 ] ;
 $router_layout[ '/db' ] = 'db.php' ;  // доповнення масиву новим елементом
 
+// Підключення до БД - потрібно на всіх сторінках, змінна $db буде доступна у всіх файлах
+$db = new PDO(
+		"mysql:host=localhost;dbname=pv111;charset=UTF8", 
+		"pv111_user", 
+		"pv111_pass"
+	);
+$db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC) ;
+$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION) ;
+$db->setAttribute(PDO::ATTR_PERSISTENT, true) ;
+
 if( isset( $router_layout[$uri] ) ) {
 	$page =  // змінні локалізуються тільки у функціях, оголошена поза функцією змінна доступна скрізь, у т.ч. в іншому файлі
 			$router_layout[$uri] ;  // у РНР оператор "+" діє тільки на числа, для рядків - оператор "."

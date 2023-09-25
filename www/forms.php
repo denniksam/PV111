@@ -1,3 +1,6 @@
+<?php if( isset( $db_message ) ) : ?>
+	<span class="helper-text" data-error="<?= $db_message ?>"></span>
+<?php endif ?>
 
 <div class="row">
 <form class="col s12" method="post" enctype="multipart/form-data">
@@ -6,7 +9,7 @@
 	  <i class="material-icons prefix">account_circle</i>
 	  <input id="reg-name" name="reg-name" type="text" 
 		class='<?= $name_class ?>' value='<?= $reg_name ?>'>
-	  <label for="reg-name">First Name</label>
+	  <label for="reg-name">Name</label>
 	  <?php if( isset( $name_message ) ) : ?>
 		<span class="helper-text" data-error="<?= $name_message ?>"></span>
 	  <?php endif ?>	
@@ -15,7 +18,7 @@
 	  <i class="material-icons prefix">badge</i>
 	  <input id="reg-lastname" name="reg-lastname" type="text" 
 		class='<?= $lastname_class ?>' value='<?= $reg_lastname ?>'>
-	  <label for="reg-lastname">Last Name</label>
+	  <label for="reg-lastname">Login</label>
 	  <?php if( isset( $lastname_message ) ) : ?>
 		<span class="helper-text" data-error="<?= $lastname_message ?>"></span>
 	  <?php endif ?>	
@@ -28,9 +31,9 @@
 	  <label for="reg-email">Email</label>
 	</div>
 	<div class="input-field col s6">
-	  <i class="material-icons prefix">phone</i>
-	  <input id="reg-phone" name="reg-phone" type="tel" class="validate">
-	  <label for="reg-phone">Telephone</label>
+	  <i class="material-icons prefix">pin</i>
+	  <input id="reg-phone" name="reg-phone" type="password" class="validate">
+	  <label for="reg-phone">Password</label>
 	</div>
   </div>
   <div class="row">

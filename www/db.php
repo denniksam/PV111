@@ -54,14 +54,7 @@
 	<em>$db->setAttribute(PDO::ATTR_PERSISTENT, true) ;</em>
 </p>
 <?php
-$db = new PDO(
-		"mysql:host=localhost;dbname=pv111;charset=UTF8", 
-		"pv111_user", 
-		"pv111_pass"
-	);
-$db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC) ;
-$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION) ;
-$db->setAttribute(PDO::ATTR_PERSISTENT, true) ;
+
 // виконання запиту
 try {                                 // 
 	$res = $db->query(                // запити не розділяють за типом 
@@ -75,18 +68,24 @@ try {                                 //
 catch( PDOException $ex ) {
 	echo $ex->getMessage() ;
 }
+// https://www.ietf.org/rfc/rfc2898.txt - стандарт "хешування паролів"
+$sql = <<<SQL
+CREATE TABLE IF NOT EXISTS users (
+	`id`       BIGINT       PRIMARY KEY,
+	`login`    VARCHAR(64)  NOT NULL,
+	`salt`     CHAR(16)     NOT NULL,
+	`pass_dk`  CHAR(40)     NOT NULL   COMMENT 'DK - derived key',
+	`name`     VARCHAR(128)     NULL,
+	`email`    VARCHAR(128)     NULL,
+	`avatar`   VARCHAR(512)     NULL
+) ENGINE = InnoDB DEFAULT CHARSET = utf8
+SQL;
+try {
+	$db->query( $sql ) ;
+	echo 'CREATE OK' ;
+}
+catch( PDOException $ex ) {
+	echo $ex->getMessage() ;
+}
 ?>
 <footer style="height:20vh"></footer>
-
-Д.З. Реалізувати виконання запиту
-	select current_timestamp
-    union select  current_date
-    union select 1;
-А також відображення його результату у вигляді таблиці (HTML) за зразком
-	+---------------------+
-	| current_timestamp   |
-	+---------------------+
-	| 2023-09-20 19:26:46 |
-	| 2023-09-20          |
-	| 1                   |
-	+---------------------+

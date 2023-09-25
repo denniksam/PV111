@@ -23,7 +23,7 @@ if( $_SERVER[ 'REQUEST_METHOD' ] == 'POST' ) {
 	else {
 		$reg_lastname = $_POST[ 'reg-lastname' ] ;
 		if( strlen( $reg_name ) < 2 ) {
-			$lastname_message = "Lastname too short" ;
+			$lastname_message = "Login too short" ;
 		}
 	}
 	
@@ -46,19 +46,52 @@ if( $_SERVER[ 'REQUEST_METHOD' ] == 'POST' ) {
 	if( isset( $_FILES[ 'reg-avatar' ] ) ) {
 		if( $_FILES[ 'reg-avatar' ][ 'error' ] == 0 
 		 && $_FILES[ 'reg-avatar' ][ 'size' ] > 0 ) {
+			 
+			$uploadDir = "C:/Projects/Step/PHP/PV111/www/avatars" ;
+			$extension = pathinfo( 
+				$_FILES['reg-avatar']['name'], 
+				PATHINFO_EXTENSION 
+			) ;
+			
+			do {
+				$uniqueFileName = uniqid() . '.' . $extension ;
+				$uploadPath = "{$uploadDir}/{$uniqueFileName}";
+			} while( file_exists( $uploadPath ) ) ;
+			
 			move_uploaded_file(
 				$_FILES[ 'reg-avatar' ][ 'tmp_name' ],
-				"C:/Projects/Step/PHP/PV111/www/{$_FILES['reg-avatar']['name']}"
+				$uploadPath
 			) ;
 		 }
 	}
-	/* Реалізувати алгоритм для формування випадкового імені для 
-	завнтаженого файлу. При цьому зберігати його розширення (тип),
-	а також перевіряти чи не існує такого файлу вже у папці завантаження.
-	** Додати повідомлення про успішне збереження у сесію (відновити його
-	   на сторінці форми)
-	*/
+// змінна $db встановлюється у диспетчері доступу і доступна тут
+if( empty( $db ) ) {
+	echo 'Server error' ;
+	exit ;
+}
+$salt = substr( md5( uniqid() ), 0, 16 ) ;
+$dk = sha1( $salt . md5( $_POST[ 'reg-phone' ] ) ) ;
+$email = empty( $_POST[ 'reg-email' ] ) 
+	? "NULL" 
+	: "'{$_POST['reg-email']}'" ;
 	
+$avatar = empty( $uniqueFileName ) 
+	? "NULL" 
+	: "'{$uniqueFileName}'" ;
+	
+$sql = <<<TXT
+INSERT INTO users(`id`,`login`,`salt`,`pass_dk`,`name`,`email`,`avatar`)
+VALUES( UUID_SHORT(), '{$reg_lastname}', '{$salt}', '{$dk}', 
+		'{$reg_name}', {$email}, {$avatar} )	
+TXT;
+try {
+	$db->query( $sql ) ;
+	$_SESSION[ 'reg_db'  ] = true ;
+}
+catch( PDOException $ex ) {
+	$_SESSION[ 'reg_db'  ] = $ex->getMessage() ;
+}
+// echo $sql ; exit;	
 	// echo '<pre>' ; print_r( $_FILES ) ; exit ;
 	/*
 	Array
@@ -80,6 +113,13 @@ else {  // запит методом GET
 	// перевіряємо, чи є дані у сесії
 	session_start() ;   // включення сесії
 	if( isset( $_SESSION[ 'form_data' ] ) ) {
+		// Загальна успішність:
+		if( $_SESSION[ 'reg_db' ] !== true ) {
+			$db_message = $_SESSION[ 'reg_db' ] ;
+		}
+		else {
+			$db_message = "INSERT OK" ;
+		}
 		// є передача даних, перевіряємо повідомлення
 		if( isset( $_SESSION[ 'name_message' ] ) ) { 
 			$name_message = $_SESSION[ 'name_message' ] ;
