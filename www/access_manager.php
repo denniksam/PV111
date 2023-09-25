@@ -41,6 +41,7 @@ $router_layout = [  // масив у РНР створюється [] або arr
 ] ;
 $router_direct = [  // контролери - самі визначають відображення
 	'/forms' => 'forms_controller.php',
+	'/auth'  => 'auth_controller.php',
 ] ;
 $router_layout[ '/db' ] = 'db.php' ;  // доповнення масиву новим елементом
 
@@ -54,13 +55,15 @@ $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC) ;
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION) ;
 $db->setAttribute(PDO::ATTR_PERSISTENT, true) ;
 
-if( isset( $router_layout[$uri] ) ) {
+$uri_parts = explode( '?', $uri ) ;
+
+if( isset( $router_layout[ $uri_parts[0] ] ) ) {
 	$page =  // змінні локалізуються тільки у функціях, оголошена поза функцією змінна доступна скрізь, у т.ч. в іншому файлі
-			$router_layout[$uri] ;  // у РНР оператор "+" діє тільки на числа, для рядків - оператор "."
+			$router_layout[ $uri_parts[0] ] ;  // у РНР оператор "+" діє тільки на числа, для рядків - оператор "."
 	include '_layout.php' ;  // перехід до інструкцій в іншому файлі
 }
-else if( isset( $router_direct[$uri] ) ) {
-	include $router_direct[$uri] ;  // без шаблону - на файл
+else if( isset( $router_direct[ $uri_parts[0] ] ) ) {
+	include $router_direct[ $uri_parts[0] ] ;  // без шаблону - на файл
 }
 else {
 	echo 'access manager - 404' ;

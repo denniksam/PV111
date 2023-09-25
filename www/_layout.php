@@ -18,8 +18,8 @@
 <body>
 	<nav>
 		<div class="nav-wrapper orange">
-		  <a href="/" class="brand-logo">PV-111</a>
-		  <ul id="nav-mobile" class="right hide-on-med-and-down">
+		  <a href="/" class="brand-logo left">PV-111</a>
+		  <ul id="nav-mobile" class="right ">
 			<li <?php if($page=='about.php') echo 'class="active"'; ?> >
 				<a href="/about">About</a>
 			</li>
@@ -29,13 +29,68 @@
 			<li <?php if($page=='db.php'   ) echo 'class="active"'; ?> >
 				<a href="/db">DB</a>
 			</li>
+			<li>
+				<!-- Modal Trigger -->
+				<a class="waves-effect waves-light btn modal-trigger orange" href="#auth-modal">
+					<i class="material-icons">login</i>
+				</a>
+			</li>
 		  </ul>
 		</div>
 	</nav>
 	<div class="container">
 		<?php include $page ; ?>
 	</div>
+	
+	
+  <!-- Modal Structure -->
+  <div id="auth-modal" class="modal">
+    <div class="modal-content">
+      <h4>Вхід у систему</h4>
+      <div class="row">
+		<div class="input-field col s6">
+		  <i class="material-icons prefix">account_circle</i>
+		  <input id="auth-login" name="auth-login" type="text" >
+		  <label for="auth-login">Логін</label>		 
+		</div>
+		<div class="input-field col s6">
+		  <i class="material-icons prefix">pin</i>
+		  <input id="auth-password" name="auth-password" type="password" >
+		  <label for="auth-password">Пароль</label>
+		</div>
+	  </div>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Закрити</a>
+      <a href="#!" id="auth-button" class="waves-effect waves-green btn-flat">Вхід</a>
+    </div>
+  </div>
+	
 <!-- Compiled and minified JavaScript -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	var elems = document.querySelectorAll('.modal');
+	var instances = M.Modal.init(elems, {});
+	const authButton = document.getElementById("auth-button");
+	if(authButton) authButton.addEventListener('click', authClick);
+	else console.error("Element '#auth-button' not found");
+});
+function authClick() {
+	const authLogin = document.getElementById("auth-login");
+	if(!authLogin) throw "Element '#auth-login' not found" ;
+	const authPassword = document.getElementById("auth-password");
+	if(!authPassword) throw "Element '#auth-password' not found" ;
+	const login = authLogin.value ;
+	const password = authPassword.value ;
+	if( login.length == 0 ) {
+		alert( 'Введіть логін' ) ;
+		return ;
+	}
+	fetch( `/auth?login=${login}&password=${password}`, {
+		method: 'GET',		
+	}).then( r => r.text() ).then( console.log );
+}
+</script>
 </body>
 </html>

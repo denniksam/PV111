@@ -1,5 +1,5 @@
 <?php if( isset( $db_message ) ) : ?>
-	<span class="helper-text" data-error="<?= $db_message ?>"></span>
+	<span> <?= $db_message ?> </span>
 <?php endif ?>
 
 <div class="row">

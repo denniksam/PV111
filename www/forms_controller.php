@@ -69,6 +69,7 @@ if( empty( $db ) ) {
 	echo 'Server error' ;
 	exit ;
 }
+// TODO: перевірити унікальність логіну
 $salt = substr( md5( uniqid() ), 0, 16 ) ;
 $dk = sha1( $salt . md5( $_POST[ 'reg-phone' ] ) ) ;
 $email = empty( $_POST[ 'reg-email' ] ) 
@@ -89,6 +90,7 @@ try {
 	$_SESSION[ 'reg_db'  ] = true ;
 }
 catch( PDOException $ex ) {
+	// TODO: log ex and return false
 	$_SESSION[ 'reg_db'  ] = $ex->getMessage() ;
 }
 // echo $sql ; exit;	
