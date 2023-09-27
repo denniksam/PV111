@@ -113,7 +113,7 @@ catch( PDOException $ex ) {
 }
 else {  // запит методом GET
 	// перевіряємо, чи є дані у сесії
-	session_start() ;   // включення сесії
+	// session_start() ;   // включення сесії - перенесено у диспетчер доступу
 	if( isset( $_SESSION[ 'form_data' ] ) ) {
 		// Загальна успішність:
 		if( $_SESSION[ 'reg_db' ] !== true ) {

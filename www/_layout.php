@@ -30,10 +30,18 @@
 				<a href="/db">DB</a>
 			</li>
 			<li>
+			<?php if( isset( $_CONTEXT[ 'user' ] ) ) : /* авторизований режим */
+				$avatar = empty( $_CONTEXT['user']['avatar'] ) 
+					? 'no_photo.svg' 
+					: $_CONTEXT['user']['avatar'] ;  
+			?>			
+				<img class="circle" style="max-height:50px;margin:5px" src="/avatars/<?= $avatar ?>" alt="avatar"/>
+			<?php else : /* гостьовий режим */ ?>
 				<!-- Modal Trigger -->
 				<a class="waves-effect waves-light btn modal-trigger orange" href="#auth-modal">
 					<i class="material-icons">login</i>
 				</a>
+			<?php endif ?>	
 			</li>
 		  </ul>
 		</div>
@@ -61,6 +69,7 @@
 	  </div>
     </div>
     <div class="modal-footer">
+	<span id='auth-rejected-message' style="visibility:hidden;color:maroon;display:inline-block;width:50%;text-align:left">Авторизацію відхилено</span>
       <a href="#!" class="modal-close waves-effect waves-green btn-flat">Закрити</a>
       <a href="#!" id="auth-button" class="waves-effect waves-green btn-flat">Вхід</a>
     </div>
@@ -89,7 +98,13 @@ function authClick() {
 	}
 	fetch( `/auth?login=${login}&password=${password}`, {
 		method: 'GET',		
-	}).then( r => r.text() ).then( console.log );
+	}).then( r => {
+		if( r.status != 200 ) {
+			const msg = document.getElementById('auth-rejected-message');
+			msg.style.visibility = 'visible';
+		}
+		else r.text().then( console.log );
+	} ); 
 }
 </script>
 </body>

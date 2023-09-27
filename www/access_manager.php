@@ -45,6 +45,21 @@ $router_direct = [  // контролери - самі визначають ві
 ] ;
 $router_layout[ '/db' ] = 'db.php' ;  // доповнення масиву новим елементом
 
+$uri_parts = explode( '?', $uri ) ;
+unset( $included_file ) ;
+if( isset( $router_layout[ $uri_parts[0] ] ) ) {
+	$page =  // змінні локалізуються тільки у функціях, оголошена поза функцією змінна доступна скрізь, у т.ч. в іншому файлі
+			$router_layout[ $uri_parts[0] ] ;  // у РНР оператор "+" діє тільки на числа, для рядків - оператор "."
+	$included_file = '_layout.php' ;  // перехід до інструкцій в іншому файлі
+}
+else if( isset( $router_direct[ $uri_parts[0] ] ) ) {
+	$included_file = $router_direct[ $uri_parts[0] ] ;  // без шаблону - на файл
+}
+else {
+	echo 'access manager - 404' ;
+	exit ;
+}
+
 // Підключення до БД - потрібно на всіх сторінках, змінна $db буде доступна у всіх файлах
 $db = new PDO(
 		"mysql:host=localhost;dbname=pv111;charset=UTF8", 
@@ -55,19 +70,33 @@ $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC) ;
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION) ;
 $db->setAttribute(PDO::ATTR_PERSISTENT, true) ;
 
-$uri_parts = explode( '?', $uri ) ;
+$_CONTEXT = [   // наш масив, який буде слугувати для "глобальних" змінних та служб
+	'db' => $db
+] ;
 
-if( isset( $router_layout[ $uri_parts[0] ] ) ) {
-	$page =  // змінні локалізуються тільки у функціях, оголошена поза функцією змінна доступна скрізь, у т.ч. в іншому файлі
-			$router_layout[ $uri_parts[0] ] ;  // у РНР оператор "+" діє тільки на числа, для рядків - оператор "."
-	include '_layout.php' ;  // перехід до інструкцій в іншому файлі
+session_start() ;
+if( isset( $_SESSION[ 'auth-user-id' ] ) ) {  // є дані авторизації
+	// вилучаємо з БД відомості про авторизованого користувача
+	$sql = "SELECT u.* FROM users u WHERE u.id = ?" ;
+	try {
+		$prep = $db->prepare( $sql ) ;
+		$prep->execute( [ $_SESSION[ 'auth-user-id' ] ] ) ;
+		$row = $prep->fetch() ;
+	}
+	catch( PDOException $ex ) {
+		http_response_code( 500 ) ;
+		echo "Server error - " . $ex->getMessage() ;
+		exit ;
+	}
+	if( $row === false ) {  // у сесії неправильні дані
+		unset( $_SESSION[ 'auth-user-id' ] ) ;
+	}
+	else {  // вкладаємо дані у контекст для доступності у подальшому коді
+		$_CONTEXT[ 'user' ] = $row ;
+	}
 }
-else if( isset( $router_direct[ $uri_parts[0] ] ) ) {
-	include $router_direct[ $uri_parts[0] ] ;  // без шаблону - на файл
-}
-else {
-	echo 'access manager - 404' ;
-}
+include $included_file ;
+
 
 /* "Білий" перелік - перелік дозволених ресурсів (маршрутів, файлів, тощо)
 Позитив - безпека
