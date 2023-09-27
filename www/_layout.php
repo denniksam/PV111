@@ -26,23 +26,30 @@
 			<li <?php if($page=='forms.php') echo 'class="active"'; ?> >
 				<a href="/forms">Forms</a>
 			</li>
-			<li <?php if($page=='db.php'   ) echo 'class="active"'; ?> >
+			<li <?php if($page=='db.php') echo 'class="active"'; ?> >
 				<a href="/db">DB</a>
 			</li>
-			<li>
 			<?php if( isset( $_CONTEXT[ 'user' ] ) ) : /* авторизований режим */
 				$avatar = empty( $_CONTEXT['user']['avatar'] ) 
 					? 'no_photo.svg' 
 					: $_CONTEXT['user']['avatar'] ;  
-			?>			
+			?>	
+			<li>		
 				<img class="circle" style="max-height:50px;margin:5px" src="/avatars/<?= $avatar ?>" alt="avatar"/>
+			</li>
+			<li>
+				<a class="waves-effect waves-light btn modal-trigger orange" href="#">
+					<i class="material-icons">logout</i>
+				</a>
+			</li>
 			<?php else : /* гостьовий режим */ ?>
+			<li>
 				<!-- Modal Trigger -->
 				<a class="waves-effect waves-light btn modal-trigger orange" href="#auth-modal">
 					<i class="material-icons">login</i>
 				</a>
-			<?php endif ?>	
 			</li>
+			<?php endif ?>	
 		  </ul>
 		</div>
 	</nav>
