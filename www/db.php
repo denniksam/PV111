@@ -89,3 +89,7 @@ catch( PDOException $ex ) {
 }
 ?>
 <footer style="height:20vh"></footer>
+Д.З. Переробити сторінку DB (db.php) до формалізму роботи
+з контроллерами (DbController). Перенести маршрутизацію
+в access_manager до іншої групи з $router_layout до $router_oop
+провести випробування.

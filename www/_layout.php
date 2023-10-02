@@ -29,6 +29,9 @@
 			<li <?php if($page=='db.php') echo 'class="active"'; ?> >
 				<a href="/db">DB</a>
 			</li>
+			<li <?php if($page=='') echo 'class="active"'; ?> >
+				<a href="/oop">OOP</a>
+			</li>
 			<?php if( isset( $_CONTEXT[ 'user' ] ) ) : /* авторизований режим */
 				$avatar = empty( $_CONTEXT['user']['avatar'] ) 
 					? 'no_photo.svg' 

@@ -44,6 +44,9 @@ $router_direct = [  // контролери - самі визначають ві
 	'/auth'  => 'auth_controller.php',
 ] ;
 $router_layout[ '/db' ] = 'db.php' ;  // доповнення масиву новим елементом
+$router_oop = [
+	'/oop' => 'OopController'
+] ;
 
 $uri_parts = explode( '?', $uri ) ;
 unset( $included_file ) ;
@@ -54,6 +57,19 @@ if( isset( $router_layout[ $uri_parts[0] ] ) ) {
 }
 else if( isset( $router_direct[ $uri_parts[0] ] ) ) {
 	$included_file = $router_direct[ $uri_parts[0] ] ;  // без шаблону - на файл
+}
+else if( isset( $router_oop[ $uri_parts[0] ] ) ) {
+	$class_name = $router_oop[ $uri_parts[0] ] ;
+	$included_file = "{$class_name}.php" ;
+	include $included_file ;   // особливість РНР у тому, що створити об'єкт можна
+	if( class_exists( $class_name ) ) {
+		$obj = new $class_name() ;	 // маючи назву його класу у змінній
+		// $obj = new OopController() ;  // це така ж інструкція (для $class_name='OopController')
+	}
+	else {
+		echo 'access manager -- 404' ;
+		exit ;
+	}
 }
 else {
 	echo 'access manager - 404' ;
@@ -95,8 +111,13 @@ if( isset( $_SESSION[ 'auth-user-id' ] ) ) {  // є дані авторизац�
 		$_CONTEXT[ 'user' ] = $row ;
 	}
 }
-include $included_file ;
 
+if( isset( $obj ) ) {
+	$obj->serve() ;
+}
+else {
+	include $included_file ;
+}
 
 /* "Білий" перелік - перелік дозволених ресурсів (маршрутів, файлів, тощо)
 Позитив - безпека
