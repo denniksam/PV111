@@ -41,11 +41,13 @@ $router_layout = [  // масив у РНР створюється [] або arr
 ] ;
 $router_direct = [  // контролери - самі визначають відображення
 	'/forms' => 'forms_controller.php',
-	'/auth'  => 'auth_controller.php',
+	// '/auth'  => 'auth_controller.php',
 ] ;
 $router_layout[ '/db' ] = 'db.php' ;  // доповнення масиву новим елементом
 $router_oop = [
-	'/oop' => 'OopController'
+	'/oop'  => 'OopController',
+	'/auth' => 'AuthController',
+	'/shop' => 'ShopController',
 ] ;
 
 $uri_parts = explode( '?', $uri ) ;

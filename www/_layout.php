@@ -41,7 +41,7 @@
 				<img class="circle" style="max-height:50px;margin:5px" src="/avatars/<?= $avatar ?>" alt="avatar"/>
 			</li>
 			<li>
-				<a class="waves-effect waves-light btn modal-trigger orange" href="#">
+				<a class="waves-effect waves-light btn orange" href="/auth?logout">
 					<i class="material-icons">logout</i>
 				</a>
 			</li>
@@ -107,13 +107,19 @@ function authClick() {
 		return ;
 	}
 	fetch( `/auth?login=${login}&password=${password}`, {
-		method: 'GET',		
+		method: 'POST',		
 	}).then( r => {
 		if( r.status != 200 ) {
 			const msg = document.getElementById('auth-rejected-message');
 			msg.style.visibility = 'visible';
 		}
-		else r.text().then( console.log );
+		else r.text().then( t => {
+			console.log(t) ;
+			if( t == 'OK' ) {
+				// window.location.reload() ;
+				window.location.href = window.location.pathname;
+			}
+		});
 	} ); 
 }
 </script>
