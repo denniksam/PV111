@@ -20,6 +20,9 @@
 		<div class="nav-wrapper orange">
 		  <a href="/" class="brand-logo left">PV-111</a>
 		  <ul id="nav-mobile" class="right ">
+			<li <?php if($page=='ShopView.php') echo 'class="active"'; ?> >
+				<a href="/shop">Shop</a>
+			</li>
 			<li <?php if($page=='about.php') echo 'class="active"'; ?> >
 				<a href="/about">About</a>
 			</li>
@@ -56,7 +59,7 @@
 		  </ul>
 		</div>
 	</nav>
-	<div class="container">
+	<div class="row">
 		<?php include $page ; ?>
 	</div>
 	
