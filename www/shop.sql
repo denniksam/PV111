@@ -4,6 +4,7 @@ CREATE TABLE product_groups (
     `description` TEXT NULL,
     `avatar` VARCHAR(256) NULL
 ) ENGINE = InnoDB, DEFAULT CHARSET = UTF8
+ALTER TABLE `product_groups` ADD `url` VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL AFTER `avatar`, ADD UNIQUE `url_index` (`url`);
 
 CREATE TABLE product_actions (
     `id`  BIGINT PRIMARY KEY  DEFAULT UUID_SHORT(),

@@ -90,41 +90,6 @@
 	
 <!-- Compiled and minified JavaScript -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-	var elems = document.querySelectorAll('.modal');
-	var instances = M.Modal.init(elems, {});
-	const authButton = document.getElementById("auth-button");
-	if(authButton) authButton.addEventListener('click', authClick);
-	else console.error("Element '#auth-button' not found");
-});
-function authClick() {
-	const authLogin = document.getElementById("auth-login");
-	if(!authLogin) throw "Element '#auth-login' not found" ;
-	const authPassword = document.getElementById("auth-password");
-	if(!authPassword) throw "Element '#auth-password' not found" ;
-	const login = authLogin.value ;
-	const password = authPassword.value ;
-	if( login.length == 0 ) {
-		alert( 'Введіть логін' ) ;
-		return ;
-	}
-	fetch( `/auth?login=${login}&password=${password}`, {
-		method: 'POST',		
-	}).then( r => {
-		if( r.status != 200 ) {
-			const msg = document.getElementById('auth-rejected-message');
-			msg.style.visibility = 'visible';
-		}
-		else r.text().then( t => {
-			console.log(t) ;
-			if( t == 'OK' ) {
-				// window.location.reload() ;
-				window.location.href = window.location.pathname;
-			}
-		});
-	} ); 
-}
-</script>
+<script src="/js/script.js"></script>
 </body>
 </html>
