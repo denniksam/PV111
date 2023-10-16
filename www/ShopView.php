@@ -34,13 +34,15 @@
     <div class="col s10">
         <div class="row">
             <?php foreach( $products as $product ) : ?>
-                <div class="col s6 m3 l2 ">
+                <div class="col" style='width: 200px; height: 340px;'>
                 <div class="card">
                     <div class="card-image">
-                    <img src="/img/<?= $product['avatar'] ?>"  style="max-height:150px">
+                    <img src="/img/<?= $product['avatar'] ?>"  
+                        style="height:150px">
                     </div>
                     <div class="card-content">
-                    <span class="card-title" style="font-size:1.2vw"><?= $product['title'] ?></span>
+                    <span class="card-title" title="<?= $product['title'] ?>"
+                    style="font-size:1.2vw;height: 32px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;"><?= $product['title'] ?></span>
                     <p><?= $product['description'] ?></p>
                     <p><b>Price: <?= $product['price'] ?></b></p>
                     </div>

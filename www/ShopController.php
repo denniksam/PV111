@@ -27,12 +27,24 @@ class ShopController extends ApiController {
 			else {
 				$where = "WHERE id_group = {$row['id']}" ;
 			}
-			/* if( is_numeric( $_GET['grp'] ) ) {
-				$where = "WHERE id_group = {$_GET['grp']}" ;
+		}
+		if( isset( $_GET['min-price'] ) && is_numeric( $_GET['min-price'] ) ) {
+			$cond = " price >= " . $_GET['min-price'] ;
+			if( $where == "" ) {
+				$where = "WHERE {$cond}" ;
 			}
 			else {
-				$where = "WHERE NULL" ;
-			} */
+				$where .= " AND {$cond}" ;
+			}
+		}
+		if( isset( $_GET['max-price'] ) && is_numeric( $_GET['max-price'] ) ) {
+			$cond = " price <= " . $_GET['max-price'] ;
+			if( $where == "" ) {
+				$where = "WHERE {$cond}" ;
+			}
+			else {
+				$where .= " AND {$cond}" ;
+			}
 		}
 		$sql = "SELECT * FROM products {$where}" ;
 		try {

@@ -43,6 +43,31 @@ VALUES (
     (SELECT id FROM product_groups WHERE `title`='Вироби зі скла'),
     'Куля з гелікоптером', 'glass3.jpg', 1200
 );
+INSERT INTO products (`id_group`, `title`, `avatar`, `price`)
+VALUES ( 
+    (SELECT id FROM product_groups WHERE `title`='Вироби зі скла'),
+    'Лисиця', 'glass4.jpeg', 200
+);
+INSERT INTO products (`id_group`, `title`, `avatar`, `price`)
+VALUES ( 
+    (SELECT id FROM product_groups WHERE `title`='Вироби зі скла'),
+    'Цукерниця', 'glass5.jpg', 350
+);
+INSERT INTO products (`id_group`, `title`, `avatar`, `price`)
+VALUES ( 
+    (SELECT id FROM product_groups WHERE `title`='Вироби зі скла'),
+    'Павич', 'glass6.jpg', 380
+);
+INSERT INTO products (`id_group`, `title`, `avatar`, `price`)
+VALUES ( 
+    (SELECT id FROM product_groups WHERE `title`='Вироби зі скла'),
+    'Кіт', 'glass7.jpg', 310
+);
+INSERT INTO products (`id_group`, `title`, `avatar`, `price`)
+VALUES ( 
+    (SELECT id FROM product_groups WHERE `title`='Вироби зі скла'),
+    'Терези', 'glass8.jpg', 810
+);
 
 
 INSERT INTO products (`id_group`, `title`, `avatar`, `price`)
@@ -60,9 +85,20 @@ VALUES (
     (SELECT id FROM product_groups WHERE `title`='Вироби з дерева'),
     'Келих', 'wood3.jpg', 1000
 );
+INSERT INTO products (`id_group`, `title`, `avatar`, `price`)
+VALUES ( 
+    (SELECT id FROM product_groups WHERE `title`='Вироби з дерева'),
+    'Органайзер', 'wood4.jpg', 489.50
+);
 
-Д.З. Реалізувати фільтр товарів за групою:
-У контролері перевірити чи є ГЕТ-параметр 'grp',
-якщо він є та його значення не 'all', то додати це
-значення в умову для SQL-запиту 
-* позначати вибрану групу стильовим класом 'active'
+INSERT INTO products (`id_group`, `title`, `avatar`, `price`)
+VALUES ( 
+    (SELECT id FROM product_groups WHERE `title`='Вироби з дерева'),
+    'Леви', 'wood5.jpeg', 539.50
+);
+
+Д.З. Наповнити БД товарів достатньою кількістю для відпрацювання
+пагінації - поділу за сторінками. Передбачити, щоб на останній
+сторінці була неповна кількість.
+Підготуватись до теми, подивитись на типові пагінатори, 
+** зробити верстку 

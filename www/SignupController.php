@@ -24,7 +24,8 @@ class SignupController extends ApiController {
 		include '_layout.php' ; 
 	}
 	
-	protected function do_post() {
+	protected function do_post() {		
+		$db = $this->get_db() ;
 		// етап 1 - валідація
 		if( ! isset( $_POST[ 'reg-name' ] ) ) {  // наявність самих даних
 			$name_message = "No reg-name field" ;
@@ -41,15 +42,46 @@ class SignupController extends ApiController {
 		}
 		else {
 			$reg_lastname = $_POST[ 'reg-lastname' ] ;
-			if( strlen( $reg_name ) < 2 ) {
+			if( strlen( $reg_lastname ) < 2 ) {
 				$lastname_message = "Login too short" ;
+			}
+			else {
+				// перевірити унікальність логіну - перенести до блоку з логіном
+				$sql = "SELECT COUNT(*) FROM users u WHERE u.`login` = ?" ;
+				try {
+					$prep = $db->prepare( $sql ) ;
+					$prep->execute( [ $reg_lastname ] ) ;
+					$cnt = $prep->fetch( PDO::FETCH_NUM )[0] ;
+					if( $cnt != 0 ) {
+						$lastname_message = 'Login in use' ;
+					}
+				}
+				catch( PDOException $ex ) {
+					$this->log_error( __METHOD__ . "#" . __LINE__ . $ex->getMessage() . " {$sql}" ) ;
+					$this->send_error( 500 ) ;
+				}
 			}
 		}
 		$_SESSION[ 'form_data' ] = true ;
+		$_SESSION[ 'reg_db'    ] = false ;
 		$_SESSION[ 'reg_name'  ] = $reg_name ;
-		$_SESSION[ 'reg_lastname'  ] = $reg_lastname ;
+		$_SESSION[ 'reg_lastname' ] = $reg_lastname ;
 		
-		// перевіряємо чи є передані файли
+		// Визначаємо загальний стан - пройдена валідація чи ні - додати до сесії (заг. рез-т)
+		$is_valid = true ;
+		if( isset( $name_message ) ) { 
+			$_SESSION[ 'name_message' ] = $name_message ;
+			$is_valid = false ;
+		}
+		if( isset( $lastname_message ) ) { 
+			$_SESSION[ 'lastname_message' ] = $lastname_message ;
+			$is_valid = false ;
+		}
+		if( $is_valid === false ) {
+			header( 'Location: ' . $_SERVER[ 'REQUEST_URI' ] ) ;
+			exit ;
+		}
+		// перевіряємо чи є передані файли ! не зберігати файл якщо немає валідності
 		if( isset( $_FILES[ 'reg-avatar' ] ) ) {
 			if( $_FILES[ 'reg-avatar' ][ 'error' ] == 0 
 			&& $_FILES[ 'reg-avatar' ][ 'size' ] > 0 ) {
@@ -71,36 +103,8 @@ class SignupController extends ApiController {
 				) ;
 			}
 		}
+		// TODO: Оновити умову валідації з урахуванням можливих проблем із файлом	
 
-		$db = $this->get_db() ;
-		// TODO: перевірити унікальність логіну
-		$sql = "SELECT COUNT(*) FROM users u WHERE u.`login` = ?" ;
-		try {
-			$prep = $db->prepare( $sql ) ;
-			$prep->execute( [ $reg_lastname ] ) ;
-			$cnt = $prep->fetch( PDO::FETCH_NUM )[0] ;
-			if( $cnt != 0 ) {
-				$lastname_message = 'Login in use' ;
-			}
-		}
-		catch( PDOException $ex ) {
-			// TODO: log ex and return false
-			$_SESSION[ 'reg_db'  ] = $ex->getMessage() ;
-		}
-		// Визначаємо загальний стан - пройдена валідація чи ні
-		$is_valid = true ;
-		if( isset( $name_message ) ) { 
-			$_SESSION[ 'name_message' ] = $name_message ;
-			$is_valid = false ;
-		}
-		if( isset( $lastname_message ) ) { 
-			$_SESSION[ 'lastname_message' ] = $lastname_message ;
-			$is_valid = false ;
-		}
-		if( $is_valid === false ) {
-			header( 'Location: ' . $_SERVER[ 'REQUEST_URI' ] ) ;
-			exit ;
-		}
 		// Валідація пройдена - додаємо користувача до БД
 		$salt = substr( md5( uniqid() ), 0, 16 ) ;
 		$dk = sha1( $salt . md5( $_POST[ 'reg-phone' ] ) ) ;
@@ -121,8 +125,8 @@ class SignupController extends ApiController {
 			$_SESSION[ 'reg_db' ] = true ;
 		}
 		catch( PDOException $ex ) {
-			// TODO: log ex and return false
-			$_SESSION[ 'reg_db'  ] = $ex->getMessage() ;
+			$this->log_error( __METHOD__ . "#" . __LINE__ . $ex->getMessage() . " {$sql}" ) ;
+			$this->send_error( 500 ) ;
 		}
 		header( 'Location: ' . $_SERVER[ 'REQUEST_URI' ] ) ;
 		exit ;
@@ -149,6 +153,7 @@ class SignupController extends ApiController {
 			
 			// видаляємо з сесії повідомленя про дані
 			unset( $_SESSION[ 'form_data' ] ) ;
+			unset( $_SESSION[ 'reg_db' ] ) ;
 
 			$view_data['reg-name']['class'] = 
 				$view_data['reg-name']['error'] === false

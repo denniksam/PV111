@@ -39,10 +39,6 @@ $router_layout = [  // масив у РНР створюється [] або arr
 	'/'      => 'index.php',
 	'/about' => 'about.php',	
 ] ;
-$router_direct = [  // контролери - самі визначають відображення
-	// '/forms' => 'forms_controller.php',
-	// '/auth'  => 'auth_controller.php',
-] ;
 $router_layout[ '/db' ] = 'db.php' ;  // доповнення масиву новим елементом
 $router_oop = [
 	'/auth' => 'AuthController',
@@ -57,9 +53,6 @@ if( isset( $router_layout[ $uri_parts[0] ] ) ) {
 	$page =  // змінні локалізуються тільки у функціях, оголошена поза функцією змінна доступна скрізь, у т.ч. в іншому файлі
 			$router_layout[ $uri_parts[0] ] ;  // у РНР оператор "+" діє тільки на числа, для рядків - оператор "."
 	$included_file = '_layout.php' ;  // перехід до інструкцій в іншому файлі
-}
-else if( isset( $router_direct[ $uri_parts[0] ] ) ) {
-	$included_file = $router_direct[ $uri_parts[0] ] ;  // без шаблону - на файл
 }
 else if( isset( $router_oop[ $uri_parts[0] ] ) ) {
 	$class_name = $router_oop[ $uri_parts[0] ] ;
