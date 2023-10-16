@@ -40,13 +40,14 @@ $router_layout = [  // масив у РНР створюється [] або arr
 	'/about' => 'about.php',	
 ] ;
 $router_direct = [  // контролери - самі визначають відображення
-	'/forms' => 'forms_controller.php',
+	// '/forms' => 'forms_controller.php',
 	// '/auth'  => 'auth_controller.php',
 ] ;
 $router_layout[ '/db' ] = 'db.php' ;  // доповнення масиву новим елементом
 $router_oop = [
-	'/oop'  => 'OopController',
 	'/auth' => 'AuthController',
+	'/forms'=> 'SignupController',
+	'/oop'  => 'OopController',
 	'/shop' => 'ShopController',
 ] ;
 
@@ -92,7 +93,8 @@ $_CONTEXT = [   // наш масив, який буде слугувати дл�
 	'db' => $db
 ] ;
 
-session_start() ;
+session_start() ;  // включення сесії
+// після включення сесії стає доступним $_SESSION
 if( isset( $_SESSION[ 'auth-user-id' ] ) ) {  // є дані авторизації
 	// вилучаємо з БД відомості про авторизованого користувача
 	$sql = "SELECT u.* FROM users u WHERE u.id = ?" ;
