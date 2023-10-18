@@ -61,7 +61,7 @@ class ShopController extends ApiController {
 		}
 		// $cnt - загальна кількість по вибірці, розраховуємо кількість сторінок
 		// 8(2) 9(3) 10(3) 11(3) 12(3) 13(4)
-		$last_page = ceil( $cnt / $per_page ) ;
+		$last_page = $cnt == 0 ? 1 : ceil( $cnt / $per_page ) ;
 		// визначаємо поточну сторінку
 		$current_page = isset($_GET['page']) ? intval( $_GET['page'] ) : 1 ;
 		if( $current_page <= 0 ) $current_page = 1 ;

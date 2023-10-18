@@ -61,13 +61,13 @@
         <!-- Paginator -->
         <?= $current_page ?> / <?= $last_page ?>
         <ul class="pagination">
-            <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
-            <li class="active"><a href="?page=1">1</a></li>
-            <li class="waves-effect"><a href="?page=2">2</a></li>
-            <li class="waves-effect"><a href="?page=3">3</a></li>
-            <li class="waves-effect"><a href="?page=4">4</a></li>
-            <li class="waves-effect"><a href="?page=5">5</a></li>
-            <li class="waves-effect"><a href="?page=6"><i class="material-icons">chevron_right</i></a></li>
+            <li class="<?= $current_page == 1 ? "disabled" : "waves-effect" ?>"><a href="#1"><i class="material-icons">chevron_left</i></a></li>
+            <?php for( $i = 1; $i <= $last_page; $i += 1 ) : ?>
+                <li class="<?= $current_page == $i ? "active" : "waves-effect" ?>">
+                    <a href="#<?= $i ?>"><?= $i ?></a>
+                </li>
+            <?php endfor ?>
+            <li class="waves-effect"><a href="#<?= $last_page ?>"><i class="material-icons">chevron_right</i></a></li>
         </ul>
     </div> 
 </div>

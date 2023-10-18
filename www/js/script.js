@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const priceFilterButton = document.getElementById("price-filter-button");
 	if(priceFilterButton) priceFilterButton.addEventListener('click', priceFilterClick);
 	// else console.error("Element '#auth-button' not found");
-	
+
 	window.addEventListener('hashchange', onHashChanged);
 });
 function authClick() {
@@ -64,9 +64,33 @@ function priceFilterClick() {
     }
 }
 function onHashChanged() {
-	console.log('onHashChanged') ;
+	var hash = window.location.hash ;
+	var page ;
+	if( hash == '' ) {
+		page = 1 ;
+	}
+	else {
+		page = hash.substring(1);  // #2 -> 2
+	}
+	let params = [] ;
+	for( let part of window.location.search.substring(1).split('&') ) {
+		let kv = part.split('=') ;
+		if( kv.length != 2 || kv[0] == 'page' ) {
+			continue ;
+		}
+		params.push( kv ) ;
+	}
+	params.push( [ 'page', page ] ) ;
+	console.log( params ) ;
+	var queryParts = params.map( elem => elem.join('=') ) ;
+	var query = '?' + queryParts.join('&') ;
+	window.location.href = window.location.pathname + query ;
 }
 /*
-Д.З. (Фільтр товарів за цінами) Підготувати SQL запит із включенням до нього
-параметрів min-price та max-price, якщо вони є у веб-запиті.
+Завдання: При зміні будь-якої умови фільтрації (за групою, за ціною тощо)
+прибирати пагінацію, тобто фактично переводити на першу сторінку.
+
+Д.З. Реалізувати визначення максимальної та мінімальної ціни за всією
+групою вибірки (з урахуванням групи) але без урахування сторінки
+(тобто максимум та мінімум серед усіх сторінок)
 */
