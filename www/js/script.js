@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const priceFilterButton = document.getElementById("price-filter-button");
 	if(priceFilterButton) priceFilterButton.addEventListener('click', priceFilterClick);
 	// else console.error("Element '#auth-button' not found");
+	
+	window.addEventListener('hashchange', onHashChanged);
 });
 function authClick() {
 	const authLogin = document.getElementById("auth-login");
@@ -60,6 +62,9 @@ function priceFilterClick() {
     else {
         window.location.href += '?' + `min-price=${minPriceInput.value}&max-price=${maxPriceInput.value}` ;
     }
+}
+function onHashChanged() {
+	console.log('onHashChanged') ;
 }
 /*
 Д.З. (Фільтр товарів за цінами) Підготувати SQL запит із включенням до нього

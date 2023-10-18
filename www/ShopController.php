@@ -6,6 +6,8 @@ class ShopController extends ApiController {
 
 	protected function do_get() {
 		global $_CONTEXT ;
+		$per_page = 4 ;   // кількість даних на одній сторінці
+
 		$db = $this->get_db();
 		$where = "" ;
 		if( isset( $_GET['grp'] ) && $_GET['grp'] != "all" ) {
@@ -46,7 +48,29 @@ class ShopController extends ApiController {
 				$where .= " AND {$cond}" ;
 			}
 		}
-		$sql = "SELECT * FROM products {$where}" ;
+		// Особливість пагінації - запит на вибірку не містить даних про загальний
+		// розмір даних. Для їх одержання потрібен додатковий запит, але з тими ж
+		// умовами (фільтрами), що й основний запит
+		$sql = "SELECT COUNT(*) FROM products {$where}" ;
+		try {
+			$cnt = $db->query( $sql )->fetch( PDO::FETCH_NUM )[ 0 ] ;
+		}
+		catch( PDOException $ex ) {
+			$this->log_error( __METHOD__ . "#" . __LINE__ . $ex->getMessage() . " {$sql}" ) ;
+			$this->send_error( 500 ) ;
+		}
+		// $cnt - загальна кількість по вибірці, розраховуємо кількість сторінок
+		// 8(2) 9(3) 10(3) 11(3) 12(3) 13(4)
+		$last_page = ceil( $cnt / $per_page ) ;
+		// визначаємо поточну сторінку
+		$current_page = isset($_GET['page']) ? intval( $_GET['page'] ) : 1 ;
+		if( $current_page <= 0 ) $current_page = 1 ;
+		if( $current_page > $last_page ) $current_page = $last_page ;
+		// визначаємо $skip - кількість пропусків у вибірці для даної сторінки
+		// 1(0x4), 2(1x4), 3(2x4)
+		$skip = ($current_page - 1) * $per_page ;
+
+		$sql = "SELECT * FROM products {$where} LIMIT {$skip}, {$per_page}" ;
 		try {
 			$ans = $db->query( $sql ) ;
 			$products = $ans->fetchAll() ;

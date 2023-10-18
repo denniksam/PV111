@@ -1,4 +1,7 @@
 <?php
+    // сторінка має надходити із запиту, а загальна кількість (last_page) - передаватись з контроллера
+   
+
     // Визначаємо максимальну та мінімальну ціни з наявної вибірки
     if( is_array( $products ) && count( $products ) > 0 ) {
         $max_price = $products[0]['price'] ;
@@ -55,5 +58,16 @@
                 </div>
             <?php endforeach ?>
         </div>
+        <!-- Paginator -->
+        <?= $current_page ?> / <?= $last_page ?>
+        <ul class="pagination">
+            <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+            <li class="active"><a href="?page=1">1</a></li>
+            <li class="waves-effect"><a href="?page=2">2</a></li>
+            <li class="waves-effect"><a href="?page=3">3</a></li>
+            <li class="waves-effect"><a href="?page=4">4</a></li>
+            <li class="waves-effect"><a href="?page=5">5</a></li>
+            <li class="waves-effect"><a href="?page=6"><i class="material-icons">chevron_right</i></a></li>
+        </ul>
     </div> 
 </div>
