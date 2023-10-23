@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
 	var elems = document.querySelectorAll('.modal');
 	var instances = M.Modal.init(elems, {});
+	var elems = document.querySelectorAll('select');
+    var instances = M.FormSelect.init(elems, {});
+
 	const authButton = document.getElementById("auth-button");
 	if(authButton) authButton.addEventListener('click', authClick);
 	else console.error("Element '#auth-button' not found");
