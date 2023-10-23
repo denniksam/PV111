@@ -13,7 +13,42 @@ document.addEventListener('DOMContentLoaded', function() {
 	// else console.error("Element '#auth-button' not found");
 
 	window.addEventListener('hashchange', onHashChanged);
+
+	// add product form (button)
+	const addProductButton = document.getElementById("add-product-button");
+	if(addProductButton) addProductButton.addEventListener('click', addProductClick);	
+
 });
+
+function addProductClick() {
+	const form = document.getElementById("add-form");
+	if( ! form ) throw "#add-form not found" ;
+	console.log(form);
+
+	const title = form.querySelector('[name="title"]');
+	if( ! title ) throw '[name="title"] not found' ;
+	if( title.value.length < 3 ) {
+		alert( 'Назва закоротка' ) ;
+		return ;
+	}
+
+	// form.submit(); - з оновленням сторінки
+
+	// а це - асинхронний варіант надсилання форми
+	fetch(window.location.href, {
+		method: 'POST',
+		body: new FormData(form)
+	}).then( r => {
+		if( r.status === 201 ) {  // 201 - Created
+			// Очищаємо форму (можна оновити сторінку)
+		}
+		else {
+			// Проблеми з додаванням товару - виводимо повідомлення, одержане від сервера
+			r.text().then(alert);
+		}
+	} ) ;
+}
+
 function authClick() {
 	const authLogin = document.getElementById("auth-login");
 	if(!authLogin) throw "Element '#auth-login' not found" ;

@@ -94,9 +94,47 @@ class ShopController extends ApiController {
 		$page =  'ShopView.php' ;
 		include '_layout.php' ;
 	}
+
+	protected function do_post() {
+		// echo '<pre>' ; print_r( $_POST ) ; print_r( $_FILES ) ; exit ;
+		if( $_FILES['avatar']['error'] == 0 && $_FILES['avatar']['size'] != 0 ) {
+			$ext = pathinfo( $_FILES['avatar']['name'], PATHINFO_EXTENSION ) ;
+			// TODO: перевірити на допустимість розширення (типу файла)
+			$avatar = uniqid() . ".$ext" ;
+			move_uploaded_file(
+				$_FILES['avatar']['tmp_name'],
+				"./img/$avatar"
+			);
+		}
+		else {
+			$avatar = null ;
+		}
+		$db = $this->get_db() ;
+		$sql = "INSERT INTO products (id,title,`description`,id_group,avatar,price)
+		VALUES( UUID_SHORT(), ?, ?, ?, ?, ? )" ;
+		try {
+			$prep = $db->prepare( $sql ) ;
+			$prep->execute( [ 
+				$_POST['title'], 
+				$_POST['description'],  
+				$_POST['group'],
+				$avatar,
+				$_POST['price'],
+			] ) ;
+			http_response_code( 201 ) ;  // Created
+			echo 'ADD OK' ;
+		}
+		catch( PDOException $ex ) {
+			http_response_code( 500 ) ;
+			echo $ex->getMessage() ;
+			$this->log_error( __METHOD__ . "#" . __LINE__ . $ex->getMessage() . " {$sql}" ) ;
+			// $this->send_error( 500 ) ;
+		}
+	}
 }
 /*
-Д.З. Перевести у режим роботи з контролерами сторінки index та about
-Зверстати картку для відображення товару, зазначивши необхідні дані
-(назву, ціну, за наявності - знижку, картинку, ....)
+Д.З. Реалізувати валідацію форми додавання нового товару ДО надсилання
+(заповнення необхідних полів у т.ч. файлового).
+Забезпечити очищення даних полів форми у випадку успішного додавання товару. 
+* Помічати поля, що проходять/не проходять валідацію, відповідним стилем
 */

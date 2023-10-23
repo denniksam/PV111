@@ -73,20 +73,20 @@
         <?php if( isset( $_CONTEXT[ 'user' ] ) && 
                 $_CONTEXT[ 'user' ][ 'login' ] == 'admin' ) : ?>
             <div class="card">
-                
-              <form id="add-form">
+
+              <form id="add-form" method='post' enctype='multipart/form-data'>
                 <div class="card-content">
                     <span class="card-title">Додавання товару</span>
                     
                     <div class="row">
                         <div class="input-field col s6">
                             <i class="material-icons prefix">shopping_cart</i>
-                            <input id="add-title" type="text" class="validate">
+                            <input name="title" id="add-title" type="text" class="validate">
                             <label for="add-title">Назва товару</label>
                         </div>
                         <div class="input-field col s6">
                             <i class="material-icons prefix">list_alt</i>
-                            <select>
+                            <select name="group">
                                 <option value="" disabled selected>Оберіть товарну групу</option>
                                 <?php foreach( $product_groups as $product_group ) : ?>
                                     <option value="<?=$product_group['id']?>"><?= $product_group['title'] ?></option>
@@ -99,14 +99,14 @@
                     <div class="row">
                         <div class="input-field col s6">
                             <i class="material-icons prefix">receipt_long</i>
-                            <input id="add-description" type="text" class="validate">
+                            <input name="description" id="add-description" type="text" class="validate">
                             <label for="add-description">Опис товару</label>
                         </div>
                         <div class="col s6">
                             <div class="file-field input-field">
                                 <div class="btn orange">
                                     <span>File</span>
-                                    <input type="file">
+                                    <input name="avatar" type="file">
                                 </div>
                                 <div class="file-path-wrapper">
                                     <input class="file-path validate" type="text">
@@ -118,12 +118,12 @@
                     <div class="row">
                         <div class="input-field col s6">
                             <i class="material-icons prefix">money</i>
-                            <input id="add-price" type="number" step="0.01" class="validate">
+                            <input name="price" id="add-price" type="number" step="0.01" class="validate">
                             <label for="add-price">Ціна товару</label>
                         </div>
                         <div class="input-field col s6">
                             <i class="material-icons prefix">percent</i>
-                            <select>
+                            <select name="action">
                                 <option value="" disabled selected>Виберіть акцію</option>
                                 <option value="1">Option 1</option>
                                 <option value="2">Option 2</option>
@@ -136,7 +136,7 @@
               </form>
 
                 <div class="card-action right-align">
-                    <a id="add-button" href="#" class="btn orange">Додати до БД</a>
+                    <button id="add-product-button" class="btn orange">Додати до БД</button>
                 </div>
             </div>
         <?php endif ?>
