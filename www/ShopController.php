@@ -90,6 +90,15 @@ class ShopController extends ApiController {
 			$this->send_error( 500 ) ;
 		}
 
+		$sql = "SELECT * FROM product_actions" ;
+		try {
+			$ans = $db->query( $sql ) ;
+			$product_actions = $ans->fetchAll() ;
+		}
+		catch( PDOException $ex ) {
+			$this->log_error( __METHOD__ . "#" . __LINE__ . $ex->getMessage() . " {$sql}" ) ;
+			$this->send_error( 500 ) ;
+		}
 
 		$page =  'ShopView.php' ;
 		include '_layout.php' ;
@@ -109,9 +118,15 @@ class ShopController extends ApiController {
 		else {
 			$avatar = null ;
 		}
+		if( ! empty( $_POST['action'] ) ) {
+			$action_id = $_POST['action'] ;
+		}
+		else {
+			$action_id = null ;
+		}
 		$db = $this->get_db() ;
-		$sql = "INSERT INTO products (id,title,`description`,id_group,avatar,price)
-		VALUES( UUID_SHORT(), ?, ?, ?, ?, ? )" ;
+		$sql = "INSERT INTO products (id,title,`description`,id_group,avatar,price,`id_action`)
+		VALUES( UUID_SHORT(), ?, ?, ?, ?, ?, ? )" ;
 		try {
 			$prep = $db->prepare( $sql ) ;
 			$prep->execute( [ 
@@ -120,6 +135,7 @@ class ShopController extends ApiController {
 				$_POST['group'],
 				$avatar,
 				$_POST['price'],
+				$action_id,
 			] ) ;
 			http_response_code( 201 ) ;  // Created
 			echo 'ADD OK' ;

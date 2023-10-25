@@ -40,13 +40,15 @@
                 <div class="col" style='width: 200px; height: 340px;'>
                 <div class="card">
                     <div class="card-image">
-                    <img src="/img/<?= $product['avatar'] ?>"  
+                    <img src="/img/<?= empty( $product['avatar'] ) ? 'no-image.jpg' : $product['avatar'] ?>"  
                         style="height:150px">
                     </div>
                     <div class="card-content">
-                    <span class="card-title" title="<?= $product['title'] ?>"
-                    style="font-size:1.2vw;height: 32px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;"><?= $product['title'] ?></span>
-                    <p><?= $product['description'] ?></p>
+                    <span class="card-title" 
+                          title="<?= $product['title'] . "\n" . $product['description'] ?>"
+                          style="font-size:1.2vw;height: 32px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;"
+                    ><?= $product['title'] ?></span>
+
                     <p><b>Price: <?= $product['price'] ?></b></p>
                     </div>
                     <div class="card-action right-align">            
@@ -125,9 +127,9 @@
                             <i class="material-icons prefix">percent</i>
                             <select name="action">
                                 <option value="" disabled selected>Виберіть акцію</option>
-                                <option value="1">Option 1</option>
-                                <option value="2">Option 2</option>
-                                <option value="3">Option 3</option>
+                                <?php foreach( $product_actions as $product_action ) : ?>
+                                    <option value="<?=$product_action['id']?>"><?= $product_action['title'] ?> (<?= $product_action['discount'] ?>%)</option>
+                                <?php endforeach ?>
                             </select>
                             <label>Участь в акції</label>
                         </div>

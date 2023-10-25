@@ -1,0 +1,2 @@
+23-10-25 05:01:52 ShopController::do_post#146SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'id_group' cannot be null INSERT INTO products (id,title,`description`,id_group,avatar,price,`id_action`)
+		VALUES( UUID_SHORT(), ?, ?, ?, ?, ?, ? )

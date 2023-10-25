@@ -97,8 +97,12 @@ VALUES (
     'Леви', 'wood5.jpeg', 539.50
 );
 
-Д.З. Наповнити БД товарів достатньою кількістю для відпрацювання
-пагінації - поділу за сторінками. Передбачити, щоб на останній
-сторінці була неповна кількість.
-Підготуватись до теми, подивитись на типові пагінатори, 
-** зробити верстку 
+
+INSERT INTO product_actions (`title`,`description`,`discount`)
+VALUES ('Знижка на Halloween', 'Діє у ніч з 31 на 32 жовтня', 10 );
+
+INSERT INTO product_actions (`title`,`description`,`discount`)
+VALUES ('Новорічна знижка', 'Тиждень до та тиждень після Нового Року', 15 );
+
+INSERT INTO product_actions (`title`,`description`,`discount`)
+VALUES ('Розпродаж', 'До закінчення товару', 20 );
