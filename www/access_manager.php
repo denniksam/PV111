@@ -108,6 +108,12 @@ if( isset( $_SESSION[ 'auth-user-id' ] ) ) {  // є дані авторизац�
 		$_CONTEXT[ 'user' ] = $row ;
 	}
 }
+if( isset( $_CONTEXT[ 'user' ] ) && $_CONTEXT[ 'user' ][ 'login' ] == 'admin' ) {
+	$_CONTEXT[ 'admin_mode' ] = true ;
+}
+else {
+	$_CONTEXT[ 'admin_mode' ] = false ;
+}
 
 if( isset( $obj ) ) {
 	$obj->serve() ;

@@ -70,7 +70,17 @@ class ShopController extends ApiController {
 		// 1(0x4), 2(1x4), 3(2x4)
 		$skip = ($current_page - 1) * $per_page ;
 
-		$sql = "SELECT * FROM products {$where} LIMIT {$skip}, {$per_page}" ;
+		$sql = "SELECT 
+			p.*,
+			pa.title AS action_title,
+			pa.description AS action_description,
+			pa.discount
+		FROM
+			products p 
+			LEFT JOIN product_actions pa ON p.id_action = pa.id 
+		{$where} 
+		LIMIT {$skip}, {$per_page}" ;
+
 		try {
 			$ans = $db->query( $sql ) ;
 			$products = $ans->fetchAll() ;
@@ -98,6 +108,20 @@ class ShopController extends ApiController {
 		catch( PDOException $ex ) {
 			$this->log_error( __METHOD__ . "#" . __LINE__ . $ex->getMessage() . " {$sql}" ) ;
 			$this->send_error( 500 ) ;
+		}
+
+		if( ! empty( $_GET['admin-edit'] ) ) {
+			// адмінка для редагування товару, шукаємо його за id
+			$sql = "SELECT * FROM products WHERE id = ?" ;
+			try {
+				$prep = $db->prepare( $sql ) ;
+				$prep->execute( [ $_GET['admin-edit'] ] ) ;
+				$edit_product = $prep->fetch() ;
+			}
+			catch( PDOException $ex ) {
+				$this->log_error( __METHOD__ . "#" . __LINE__ . $ex->getMessage() . " {$sql}" ) ;
+				$this->send_error( 500 ) ;
+			}
 		}
 
 		$page =  'ShopView.php' ;
@@ -149,8 +173,9 @@ class ShopController extends ApiController {
 	}
 }
 /*
-Д.З. Реалізувати валідацію форми додавання нового товару ДО надсилання
-(заповнення необхідних полів у т.ч. файлового).
-Забезпечити очищення даних полів форми у випадку успішного додавання товару. 
-* Помічати поля, що проходять/не проходять валідацію, відповідним стилем
+Д.З. Реалізувати заповнення полів форми додавання нового товару
+значеннями, якщо сторінка переходить у режим редагування товару. 
+Файлове поле заповнювати не треба (це неможливо), але поруч з ним
+вивести поточне зображення для товару.
+Також змінити назву кнопки ("Зберігти" замість "Додати")
 */

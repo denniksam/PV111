@@ -49,12 +49,26 @@
                           style="font-size:1.2vw;height: 32px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;"
                     ><?= $product['title'] ?></span>
 
-                    <p><b>Price: <?= $product['price'] ?></b></p>
+                    <p>Price:
+                        <?php if( empty( $product['discount'] ) ) { ?>
+                            <b><?= $product['price'] ?></b>
+                        <?php } else { ?>
+                            <s><?= $product['price'] ?></s>
+                            <b title="<?= $product['action_title'] . "\n" . $product['action_description'] ?>"
+                            ><?= round( $product['price'] * (1 - $product['discount'] / 100), 2 ) ?></b>
+                        <?php } ?>
+                    </p>
                     </div>
-                    <div class="card-action right-align">            
-                        <i class="material-icons">visibility</i> 
-                        <i style='display:inline-block;vertical-align:top;margin-right:20px'>123</i>
-                    <a href="#"><i class="material-icons">shopping_cart</i></a>
+                    <div class="card-action right-align">
+                        <?php if( $_CONTEXT[ 'admin_mode' ] ) : ?>
+                            <a href="?admin-edit=<?=$product['id']?>"><i class="material-icons">edit_note</i></a>
+                            <a href="#"><i class="material-icons">delete_forever</i></a>
+                        <?php else : ?>
+                            <i class="material-icons">visibility</i> 
+                            <i style='display:inline-block;vertical-align:top;margin-right:20px'>123</i>
+                            <a href="#"><i class="material-icons">shopping_cart</i></a>
+                        <?php endif ?>
+                        
                     </div>
                 </div>
                 </div>
@@ -72,13 +86,14 @@
             <li class="waves-effect"><a href="#<?= $last_page ?>"><i class="material-icons">chevron_right</i></a></li>
         </ul>
         <!-- Admin Panel --> 
-        <?php if( isset( $_CONTEXT[ 'user' ] ) && 
-                $_CONTEXT[ 'user' ][ 'login' ] == 'admin' ) : ?>
+        <?php if( $_CONTEXT[ 'admin_mode' ] ) : ?>
             <div class="card">
 
               <form id="add-form" method='post' enctype='multipart/form-data'>
                 <div class="card-content">
-                    <span class="card-title">Додавання товару</span>
+                    <span class="card-title">
+                        <?= empty( $edit_product ) ? 'Додавання товару' : 'Редагування товару' ?>
+                    </span>
                     
                     <div class="row">
                         <div class="input-field col s6">
