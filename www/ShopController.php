@@ -129,6 +129,75 @@ class ShopController extends ApiController {
 	}
 
 	protected function do_post() {
+		if( isset( $_POST['edit-id'] ) ) {  // режим редагування товару
+			$this->edit_product() ;
+		}
+		else {  // режим додавання товару
+			$this->add_product() ;
+		}
+		
+	}
+
+	protected function do_delete() {
+		echo $_GET['id'];
+	}
+
+	private function edit_product() {
+		$sql = "UPDATE products SET " ;
+		$need_comma = false ;
+
+		if( $_FILES['avatar']['error'] == 0 && $_FILES['avatar']['size'] != 0 ) {
+			$ext = pathinfo( $_FILES['avatar']['name'], PATHINFO_EXTENSION ) ;
+			// TODO: перевірити на допустимість розширення (типу файла)
+			$avatar = uniqid() . ".$ext" ;
+			move_uploaded_file(
+				$_FILES['avatar']['tmp_name'],
+				"./img/$avatar"
+			);
+			$sql .= " `avatar`='$avatar' " ;
+			$need_comma = true ;
+		}
+		
+		if( ! empty( $_POST['title'] ) ) {
+			if( $need_comma ) $sql .= ',' ;
+			$sql .= " `title`='{$_POST['title']}' " ;
+			$need_comma = true ;
+		}
+		if( ! empty( $_POST['description'] ) ) {
+			if( $need_comma ) $sql .= ',' ;
+			$sql .= " `description`='{$_POST['description']}' " ;
+			$need_comma = true ;
+		}
+		if( ! empty( $_POST['group'] ) ) {
+			if( $need_comma ) $sql .= ',' ;
+			$sql .= " `id_group`='{$_POST['group']}' " ;
+			$need_comma = true ;
+		}
+		if( ! empty( $_POST['price'] ) ) {
+			if( $need_comma ) $sql .= ',' ;
+			$sql .= " `price`={$_POST['price']} " ;
+			$need_comma = true ;
+		}
+		if( ! empty( $_POST['action'] ) ) {
+			if( $need_comma ) $sql .= ',' ;
+			$sql .= " `id_action`='{$_POST['action']}' " ;
+			$need_comma = true ;
+		}
+		$sql .= " WHERE id={$_POST['edit-id']} " ;
+		// echo $sql ;
+		$db = $this->get_db() ;
+		try {
+			$prep = $db->query( $sql ) ;
+			http_response_code( 202 ) ;  // Accepted
+			echo 'EDIT OK' ;
+		}
+		catch( PDOException $ex ) {
+			$this->log_error( __METHOD__ . "#" . __LINE__ . $ex->getMessage() . " {$sql}" ) ;
+			$this->send_error( 500 ) ;
+		}
+	}
+
+	private function add_product() {
 		// echo '<pre>' ; print_r( $_POST ) ; print_r( $_FILES ) ; exit ;
 		if( $_FILES['avatar']['error'] == 0 && $_FILES['avatar']['size'] != 0 ) {
 			$ext = pathinfo( $_FILES['avatar']['name'], PATHINFO_EXTENSION ) ;
@@ -173,9 +242,11 @@ class ShopController extends ApiController {
 	}
 }
 /*
-Д.З. Реалізувати заповнення полів форми додавання нового товару
-значеннями, якщо сторінка переходить у режим редагування товару. 
-Файлове поле заповнювати не треба (це неможливо), але поруч з ним
-вивести поточне зображення для товару.
-Також змінити назву кнопки ("Зберігти" замість "Додати")
+Д.З. Реалізувати оновлення сторінки з формою додавання
+чи редагування товару у випадку успішної відовіді сервера
+про оброблення даних форми. При оновленні прибирати зайві
+параметри запиту
+** Забезпечити збереження параметів, які відповідають за
+фільтр та пагінацію
+
 */

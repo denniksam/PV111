@@ -62,7 +62,7 @@
                     <div class="card-action right-align">
                         <?php if( $_CONTEXT[ 'admin_mode' ] ) : ?>
                             <a href="?admin-edit=<?=$product['id']?>"><i class="material-icons">edit_note</i></a>
-                            <a href="#"><i class="material-icons">delete_forever</i></a>
+                            <a onclick="adminDelete('<?=$product['id']?>')"><i class="material-icons">delete_forever</i></a>
                         <?php else : ?>
                             <i class="material-icons">visibility</i> 
                             <i style='display:inline-block;vertical-align:top;margin-right:20px'>123</i>
@@ -86,9 +86,9 @@
             <li class="waves-effect"><a href="#<?= $last_page ?>"><i class="material-icons">chevron_right</i></a></li>
         </ul>
         <!-- Admin Panel --> 
-        <?php if( $_CONTEXT[ 'admin_mode' ] ) : ?>
+        <?php if( $_CONTEXT[ 'admin_mode' ] ) :
+            $is_edit = isset( $edit_product ) ; ?>
             <div class="card">
-
               <form id="add-form" method='post' enctype='multipart/form-data'>
                 <div class="card-content">
                     <span class="card-title">
@@ -98,7 +98,8 @@
                     <div class="row">
                         <div class="input-field col s6">
                             <i class="material-icons prefix">shopping_cart</i>
-                            <input name="title" id="add-title" type="text" class="validate">
+                            <input name="title" id="add-title" type="text" class="validate"
+                                value="<?= $is_edit ? $edit_product['title'] : '' ?>">
                             <label for="add-title">Назва товару</label>
                         </div>
                         <div class="input-field col s6">
@@ -106,7 +107,8 @@
                             <select name="group">
                                 <option value="" disabled selected>Оберіть товарну групу</option>
                                 <?php foreach( $product_groups as $product_group ) : ?>
-                                    <option value="<?=$product_group['id']?>"><?= $product_group['title'] ?></option>
+                                    <option value="<?=$product_group['id']?>"
+                                         <?= $is_edit ? ($edit_product['id_group'] == $product_group['id'] ? 'selected' : '') : '' ?>><?= $product_group['title'] ?></option>
                                 <?php endforeach ?>
                             </select>
                             <label>Група товарів</label>
@@ -116,17 +118,25 @@
                     <div class="row">
                         <div class="input-field col s6">
                             <i class="material-icons prefix">receipt_long</i>
-                            <input name="description" id="add-description" type="text" class="validate">
+                            <input name="description" id="add-description" type="text" class="validate"
+                                    value="<?= $is_edit ? $edit_product['description'] : '' ?>">
                             <label for="add-description">Опис товару</label>
                         </div>
                         <div class="col s6">
-                            <div class="file-field input-field">
-                                <div class="btn orange">
-                                    <span>File</span>
-                                    <input name="avatar" type="file">
-                                </div>
-                                <div class="file-path-wrapper">
-                                    <input class="file-path validate" type="text">
+                            <div style="display:flex;justify-content: space-evenly;align-items: center;">
+                                <?php if( $is_edit ) : ?>
+                                    <img src="/img/<?= empty( $edit_product['avatar'] ) ? 'no-image.jpg' : $edit_product['avatar'] ?>"  
+                                        style="height:50px">
+                                <?php endif ?>
+
+                                <div class="file-field input-field" style="width:100%">
+                                    <div class="btn orange">
+                                        <span>File</span>
+                                        <input name="avatar" type="file">
+                                    </div>
+                                    <div class="file-path-wrapper">
+                                        <input class="file-path validate" type="text">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -135,7 +145,8 @@
                     <div class="row">
                         <div class="input-field col s6">
                             <i class="material-icons prefix">money</i>
-                            <input name="price" id="add-price" type="number" step="0.01" class="validate">
+                            <input name="price" id="add-price" type="number" step="0.01" class="validate"
+                                    value="<?= $is_edit ? $edit_product['price'] : '' ?>">
                             <label for="add-price">Ціна товару</label>
                         </div>
                         <div class="input-field col s6">
@@ -143,17 +154,22 @@
                             <select name="action">
                                 <option value="" disabled selected>Виберіть акцію</option>
                                 <?php foreach( $product_actions as $product_action ) : ?>
-                                    <option value="<?=$product_action['id']?>"><?= $product_action['title'] ?> (<?= $product_action['discount'] ?>%)</option>
+                                    <option value="<?=$product_action['id']?>"
+                                        <?= $is_edit ? ( $edit_product['id_action'] != NULL && $edit_product['id_action'] == $product_action['id'] ? 'selected' : '' ) : '' ?> 
+                                    ><?= $product_action['title'] ?> (<?= $product_action['discount'] ?>%)</option>
                                 <?php endforeach ?>
                             </select>
                             <label>Участь в акції</label>
                         </div>
                     </div>
+                    <?php if( $is_edit ) : ?>
+                        <input type="hidden" name="edit-id" value="<?=$edit_product['id']?>"/>
+                    <?php endif ?>
                 </div>
               </form>
 
                 <div class="card-action right-align">
-                    <button id="add-product-button" class="btn orange">Додати до БД</button>
+                    <button id="add-product-button" class="btn orange"><?= $is_edit ? 'Зберігти' : 'Додати до БД' ?></button>
                 </div>
             </div>
         <?php endif ?>

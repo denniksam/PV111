@@ -19,7 +19,14 @@ document.addEventListener('DOMContentLoaded', function() {
 	if(addProductButton) addProductButton.addEventListener('click', addProductClick);	
 
 });
+function adminDelete( productId ) {
+	if( confirm('Підтвердіть видалення товару №' + productId ) ) {
+		fetch(window.location.origin + window.location.pathname + `?id=${productId}`, {
+			method: 'DELETE',
+		}).then(r=>r.text()).then(console.log);
 
+	}
+}
 function addProductClick() {
 	const form = document.getElementById("add-form");
 	if( ! form ) throw "#add-form not found" ;
