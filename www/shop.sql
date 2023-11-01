@@ -20,7 +20,8 @@ CREATE TABLE products (
     `description` TEXT NULL,
     `avatar` VARCHAR(256) NULL,
     `price`  FLOAT NOT NULL,
-    `id_action` BIGINT NULL
+    `id_action` BIGINT NULL,
+    `delete_dt` DATETIME NULL
 ) ENGINE = InnoDB, DEFAULT CHARSET = UTF8
 
 INSERT INTO product_groups (`title`) VALUES ('Вироби зі скла');

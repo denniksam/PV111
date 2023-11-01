@@ -48,6 +48,16 @@ class ShopController extends ApiController {
 				$where .= " AND {$cond}" ;
 			}
 		}
+		// фільтруємо видалені товари, але не для адміністраторів
+		if( $_CONTEXT[ 'admin_mode' ] == false ) {
+			if( $where == "" ) {
+				$where = " WHERE delete_dt IS NULL " ;
+			}
+			else {
+				$where .= " AND delete_dt IS NULL " ;
+			}
+		}
+
 		// Особливість пагінації - запит на вибірку не містить даних про загальний
 		// розмір даних. Для їх одержання потрібен додатковий запит, але з тими ж
 		// умовами (фільтрами), що й основний запит
@@ -139,7 +149,37 @@ class ShopController extends ApiController {
 	}
 
 	protected function do_delete() {
-		echo $_GET['id'];
+		if( empty( $_GET['id'] ) ) {
+			$this->send_error( 400, "Parameter 'id' required" ) ;
+		}
+		$sql = "UPDATE products SET delete_dt = CURRENT_TIMESTAMP WHERE id = ?" ;
+		try {
+			$prep = $this->get_db()->prepare( $sql ) ;
+			$prep->execute( [ $_GET['id'] ] ) ;
+			http_response_code( 200 ) ;  
+			echo 'DELETE OK' ;
+		}
+		catch( PDOException $ex ) {
+			$this->log_error( __METHOD__ . "#" . __LINE__ . $ex->getMessage() . " {$sql}" ) ;
+			$this->send_error( 500 ) ;
+		}
+	}
+
+	protected function do_purge() {
+		if( empty( $_GET['id'] ) ) {
+			$this->send_error( 400, "Parameter 'id' required" ) ;
+		}
+		$sql = "UPDATE products SET delete_dt = NULL WHERE id = ?" ;
+		try {
+			$prep = $this->get_db()->prepare( $sql ) ;
+			$prep->execute( [ $_GET['id'] ] ) ;
+			http_response_code( 200 ) ; 
+			echo 'RESTORE OK' ;
+		}
+		catch( PDOException $ex ) {
+			$this->log_error( __METHOD__ . "#" . __LINE__ . $ex->getMessage() . " {$sql}" ) ;
+			$this->send_error( 500 ) ;
+		}
 	}
 
 	private function edit_product() {
@@ -240,13 +280,15 @@ class ShopController extends ApiController {
 			// $this->send_error( 500 ) ;
 		}
 	}
+
 }
 /*
-Д.З. Реалізувати оновлення сторінки з формою додавання
-чи редагування товару у випадку успішної відовіді сервера
-про оброблення даних форми. При оновленні прибирати зайві
-параметри запиту
-** Забезпечити збереження параметів, які відповідають за
-фільтр та пагінацію
+Д.З. Реалізувати можливість фільтрації товарів за участю в акціях:
+Додати чекбокс або switch (в лівій частині сайту - у фільтрах) з назвою
+"Тільки товари в акціях". При встановленні його "ON" виводити лише 
+відповідні позиції
+
+** Вивести блок, аналогічний групам товарів, але з акціями
+   і додати чекбокси до кожної з акцій
 
 */

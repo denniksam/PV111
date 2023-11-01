@@ -38,7 +38,7 @@
         <div class="row">
             <?php foreach( $products as $product ) : ?>
                 <div class="col" style='width: 200px; height: 340px;'>
-                <div class="card">
+                <div class="card" <?= is_null( $product['delete_dt'] ) ? '' : 'style="opacity:.35"' ?> >
                     <div class="card-image">
                     <img src="/img/<?= empty( $product['avatar'] ) ? 'no-image.jpg' : $product['avatar'] ?>"  
                         style="height:150px">
@@ -62,7 +62,11 @@
                     <div class="card-action right-align">
                         <?php if( $_CONTEXT[ 'admin_mode' ] ) : ?>
                             <a href="?admin-edit=<?=$product['id']?>"><i class="material-icons">edit_note</i></a>
-                            <a onclick="adminDelete('<?=$product['id']?>')"><i class="material-icons">delete_forever</i></a>
+                            <?php if( is_null( $product['delete_dt'] ) ) : ?>
+                                <a onclick="adminDelete('<?=$product['id']?>')"><i class="material-icons">delete_forever</i></a>
+                            <?php else : ?>
+                                <a onclick="adminRestore('<?=$product['id']?>')"><i class="material-icons">recycling</i></a>
+                            <?php endif ?>
                         <?php else : ?>
                             <i class="material-icons">visibility</i> 
                             <i style='display:inline-block;vertical-align:top;margin-right:20px'>123</i>
@@ -91,8 +95,17 @@
             <div class="card">
               <form id="add-form" method='post' enctype='multipart/form-data'>
                 <div class="card-content">
+
                     <span class="card-title">
-                        <?= empty( $edit_product ) ? 'Додавання товару' : 'Редагування товару' ?>
+                    <?php if( $is_edit ) : ?>
+                        Редагування товару (
+                        <?= is_null( $edit_product['delete_dt'] ) 
+                            ? 'Активний' 
+                            : 'Видалений ' . $edit_product['delete_dt'] ?>
+                        )
+                    <?php else : ?>
+                        Додавання товару
+                    <?php endif ?>
                     </span>
                     
                     <div class="row">
@@ -169,6 +182,10 @@
               </form>
 
                 <div class="card-action right-align">
+                    <?php if( $is_edit ) : ?>
+                        <!-- Кнопка "виходу" з редагування - перехід до додавання -->
+                        <a href='/shop' class="btn orange lighten-2">Форма додавання</a>
+                    <?php endif ?>
                     <button id="add-product-button" class="btn orange"><?= $is_edit ? 'Зберігти' : 'Додати до БД' ?></button>
                 </div>
             </div>

@@ -27,6 +27,14 @@ function adminDelete( productId ) {
 
 	}
 }
+function adminRestore( productId ) {
+	if( confirm('Підтвердіть відновлення товару №' + productId ) ) {
+		fetch(window.location.origin + window.location.pathname + `?id=${productId}`, {
+			method: 'PURGE',
+		}).then(r=>r.text()).then(console.log);
+
+	}
+}
 function addProductClick() {
 	const form = document.getElementById("add-form");
 	if( ! form ) throw "#add-form not found" ;
