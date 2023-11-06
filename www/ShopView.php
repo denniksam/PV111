@@ -35,7 +35,7 @@
     </div>
 
     <div class="col s10">
-        <div class="row">
+        <div class="row" data-id-cart='<?= empty($_CONTEXT['cart']) ? "" : $_CONTEXT['cart']['id'] ?>'>
             <?php foreach( $products as $product ) : ?>
                 <div class="col" style='width: 200px; height: 340px;'>
                 <div class="card" <?= is_null( $product['delete_dt'] ) ? '' : 'style="opacity:.35"' ?> >
@@ -70,7 +70,7 @@
                         <?php else : ?>
                             <i class="material-icons">visibility</i> 
                             <i style='display:inline-block;vertical-align:top;margin-right:20px'>123</i>
-                            <a href="#"><i class="material-icons">shopping_cart</i></a>
+                            <a data-id-product='<?= $product['id'] ?>' ><i class="material-icons">shopping_cart</i></a>
                         <?php endif ?>
                         
                     </div>
