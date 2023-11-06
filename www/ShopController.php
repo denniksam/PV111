@@ -133,6 +133,20 @@ class ShopController extends ApiController {
 				$this->send_error( 500 ) ;
 			}
 		}
+		// Відомості про активний кошик (копія з CartController)
+		if( isset( $_CONTEXT[ 'user' ] ) ) {
+            $id_user = $_CONTEXT[ 'user' ][ 'id' ] ;
+            $sql = "SELECT * FROM shop_cart_order WHERE `id_user` = {$id_user}
+                    AND `order_dt` IS NULL AND `delete_dt` IS NULL" ;
+            try {
+                $res = $db->query( $sql )->fetch() ;
+                $_CONTEXT[ 'cart' ] = $res ;
+            }
+            catch( PDOException $ex ) {
+                $this->log_error( __METHOD__ . "#" . __LINE__ . $ex->getMessage() . " {$sql}" ) ;
+                $this->send_error( 500 ) ;
+            }
+        }
 
 		$page =  'ShopView.php' ;
 		include '_layout.php' ;
@@ -282,13 +296,3 @@ class ShopController extends ApiController {
 	}
 
 }
-/*
-Д.З. Реалізувати можливість фільтрації товарів за участю в акціях:
-Додати чекбокс або switch (в лівій частині сайту - у фільтрах) з назвою
-"Тільки товари в акціях". При встановленні його "ON" виводити лише 
-відповідні позиції
-
-** Вивести блок, аналогічний групам товарів, але з акціями
-   і додати чекбокси до кожної з акцій
-
-*/

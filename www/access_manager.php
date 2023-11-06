@@ -42,6 +42,7 @@ $router_layout = [  // масив у РНР створюється [] або arr
 $router_layout[ '/db' ] = 'db.php' ;  // доповнення масиву новим елементом
 $router_oop = [
 	'/auth' => 'AuthController',
+	'/cart' => 'CartController',
 	'/forms'=> 'SignupController',
 	'/oop'  => 'OopController',
 	'/shop' => 'ShopController',
