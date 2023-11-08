@@ -192,3 +192,7 @@
         <?php endif ?>
     </div> 
 </div>
+
+<a href='/cart'>
+<div class="cart-fab orange white-text"><i class="material-icons">shopping_cart</i></div>
+</a>

@@ -14,3 +14,16 @@ em {
 	font-style: normal;
 	padding: 3px 10px;
 }
+.cart-fab {
+	border-radius: 50%;
+	box-shadow: #bababa 3px 3px 3px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 50px;
+	padding: 22px;
+	position: fixed;
+	right: 10px;
+	top: 77px;
+	width: 50px;
+}

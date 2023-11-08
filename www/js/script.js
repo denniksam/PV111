@@ -24,7 +24,27 @@ function activateCartButtons() {
 	for( let button of document.querySelectorAll('[data-id-product]') ) {
 		button.addEventListener('click', cartButtonClick);
 	}
+	// -1 (decrement) button
+	for( let button of document.querySelectorAll('[data-cart-dec]') ) {
+		button.addEventListener('click', decrementButtonClick);
+	}
 }
+function decrementButtonClick(e) {
+	const btn = e.target.closest('[data-cart-dec]');
+	const idProduct = btn.getAttribute('data-cart-dec');
+	fetch('/cart?id-product=' + idProduct, {
+		method: 'PUT',
+	}).then(r => {
+		// r.text().then(console.log);
+		if(r.status < 400) {
+			window.location.reload();
+		}
+		else {
+			M.toast({html: 'Помилка, спробуйте пізніше'}) ;
+		}
+	});
+}
+
 function cartButtonClick(e) {
 	const btn = e.target.closest('[data-id-product]');
 	const idProduct = btn.getAttribute('data-id-product');
@@ -32,7 +52,15 @@ function cartButtonClick(e) {
 	fetch('/cart?id-product=' + idProduct, {
 		method: 'POST',
 	}).then(r => {
-		console.log(r.status);
+		switch(r.status) {
+			case 201: M.toast({html: 'Товар додано до кошику'});
+				break;
+			case 202: M.toast({html: 'Кількість оновлена'}) ;
+				break;
+			case 500: M.toast({html: 'Помилка, спробуйте пізніше'}) ;
+				break;
+			default:  M.toast({html: 'Невідомий статус відповіді'}) ;
+		}
 	});
 }
 

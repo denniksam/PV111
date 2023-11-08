@@ -24,7 +24,9 @@ class CartController extends ApiController {
             $_CONTEXT[ 'cart' ] = $cart;
             if( ! empty( $cart ) ) {
                 // Одержуємо всі позиції по замовленню
-                $sql = "SELECT * FROM shop_cart_item WHERE id_cart = {$cart['id']}" ;
+                $sql = "SELECT i.*, p.`title`, p.`price`
+                FROM shop_cart_item i JOIN products p ON i.`id_product` = p.`id`
+                WHERE id_cart = {$cart['id']}" ;
                 try {
                     $_CONTEXT[ 'orders' ] = $this->get_db()->query($sql)->fetchAll() ;
                 }
@@ -38,6 +40,52 @@ class CartController extends ApiController {
 		$page =  'CartView.php' ;
 		include '_layout.php' ;
 	}
+    protected function do_put() {
+		global $_CONTEXT ;
+        if( empty( $_GET[ 'id-product' ] ) ) {
+            $this->send_error( 400, "'id-product' parameter required" ) ;
+        }
+        $id_product = $_GET[ 'id-product' ] ;
+
+        $db = $this->get_db();
+        if( empty( $_CONTEXT[ 'user' ] ) ) {
+            $this->send_error( 401 ) ;
+        }
+        $id_user = $_CONTEXT[ 'user' ][ 'id' ] ;
+
+        $cart = $this->get_active_card( $id_user ) ;
+        if( empty( $cart ) ) {
+            $this->send_error( 409, "Cart is empty" ) ;   // Conflict
+        }
+        $sql = "SELECT SUM(`count`) FROM shop_cart_item WHERE `id_cart`={$cart['id']} AND `id_product`={$id_product}";
+        try {
+            $cnt = $db->query( $sql )->fetch( PDO::FETCH_NUM )[0] ;
+        }
+        catch( PDOException $ex ) {
+            $this->log_error( __METHOD__ . "#" . __LINE__ . $ex->getMessage() ) ;
+            $this->send_error( 500 ) ;
+        }
+        
+        if( $cnt == 0 ) {
+            $this->send_error( 409, "Product not in cart" ) ;   // Conflict
+        }
+        else if( $cnt > 1 ) {
+            $sql = "UPDATE shop_cart_item SET `count` = `count` - 1 WHERE
+            `id_cart` = {$cart['id']} AND `id_product` = {$id_product}" ;
+        }
+        else {
+            $sql = "DELETE FROM shop_cart_item WHERE
+            `id_cart` = {$cart['id']} AND `id_product` = {$id_product} ";
+        }
+        try {
+            $cnt = $db->query( $sql ) ;
+        }
+        catch( PDOException $ex ) {
+            $this->log_error( __METHOD__ . "#" . __LINE__ . $ex->getMessage() ) ;
+            $this->send_error( 500 ) ;
+        }
+        http_response_code( 202 ) ;
+    }
 
     protected function do_post() {
 		global $_CONTEXT ;
@@ -70,6 +118,7 @@ class CartController extends ApiController {
                     VALUES( {$id_order}, {$id_user} ) " ) ;
                 $db->query( "INSERT INTO shop_cart_item(`id_cart`, `id_product`)
                     VALUES( {$id_order}, {$id_product} ) " ) ;
+                $status = 201 ;  // Created
             }
             catch( PDOException $ex ) {
                 $this->log_error( __METHOD__ . "#" . __LINE__ . $ex->getMessage() ) ;
@@ -77,7 +126,33 @@ class CartController extends ApiController {
             }
         }
         else {  // є кошик
-
+            // перевіряємо чи є такий товар у кошику
+            $sql = "SELECT COUNT(*) FROM shop_cart_item WHERE `id_cart`={$cart['id']} AND `id_product`={$id_product}";
+            try {
+                $cnt = $db->query( $sql )->fetch( PDO::FETCH_NUM )[0] ;
+            }
+            catch( PDOException $ex ) {
+                $this->log_error( __METHOD__ . "#" . __LINE__ . $ex->getMessage() ) ;
+                $this->send_error( 500 ) ;
+            }
+            if( $cnt == 0 ) {  // немає такого товару -- додаємо
+                $sql = "INSERT INTO shop_cart_item(`id_cart`, `id_product`)
+                    VALUES( {$cart['id']}, {$id_product} ) " ;
+                $status = 201 ;  // Created
+            }
+            else {  // є такий товар -- оновлюємо кількість
+                $sql = "UPDATE shop_cart_item SET `count` = `count` + 1 WHERE
+                `id_cart` = {$cart['id']} AND `id_product` = {$id_product}" ;
+                $status = 202 ;  // Accepted
+            }
+            try {
+                $cnt = $db->query( $sql ) ;
+            }
+            catch( PDOException $ex ) {
+                $this->log_error( __METHOD__ . "#" . __LINE__ . $ex->getMessage() ) ;
+                $this->send_error( 500 ) ;
+            }
+            http_response_code( $status ) ;
         }
     }
     // Повертає id, що гарантовано є вільним
